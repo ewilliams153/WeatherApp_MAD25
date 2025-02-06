@@ -1,91 +1,80 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(RunMyApp());
 }
 
-class MyApp extends StatelessWidget {
+class RunMyApp extends StatefulWidget {
+  const RunMyApp({super.key});
+
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: DefaultTabController(
-        length: 3,
-        child: _TabsNonScrollableDemo(),
-      ),
-    );
-  }
+  State<RunMyApp> createState() => _RunMyAppState();
 }
 
-class _TabsNonScrollableDemo extends StatefulWidget {
-  @override
-  __TabsNonScrollableDemoState createState() => __TabsNonScrollableDemoState();
-}
 
-class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
-    with SingleTickerProviderStateMixin, RestorationMixin {
-  late TabController _tabController;
+class _RunMyAppState extends State<RunMyApp> {
+  //this is a variable that holds the location for the current theme, light, dark or system default
+  ThemeMode _themeMode = ThemeMode.system;
 
-  final RestorableInt tabIndex = RestorableInt(0);
-
-  @override
-  String get restorationId => 'tab_non_scrollable_demo';
-
-  @override
-  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
-    registerForRestoration(tabIndex, 'tab_index');
-    _tabController.index = tabIndex.value;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(
-      initialIndex: 0,
-      length: 3,
-      vsync: this,
-    );
-    _tabController.addListener(() {
-      setState(() {
-        tabIndex.value = _tabController.index;
-      });
+  //this is a method that sets the theme to initial default and changes theme when used
+  //there is only 1 theme defined in the code - the default
+  void changeTheme(ThemeMode themeMode) {
+    setState(() {
+      _themeMode = themeMode;
     });
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    tabIndex.dispose();
-    super.dispose();
-  }
-
+  //this is where we build the widget tree/logistics
+  //Widget is a type of class that arleady has its parameters built, theres a default Widget, 
   @override
   Widget build(BuildContext context) {
-// For the ToDo task hint: consider defining the widget and name of the tabs here
-    final tabs = ['Tab 1', 'Tab 2', 'Tab 3'];
+     //dependencies are here based on Material App
+    return MaterialApp(
+      //class ThemeData is defined from the flutter/material.dart package
+      theme: ThemeData(primarySwatch: Colors.blueGrey),
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          'Tabs Demo',
+      // standard dark theme
+      darkTheme: ThemeData.dark(),
+      //the light theme of the app
+      themeMode: _themeMode,
+      //debug banner 
+      debugShowCheckedModeBanner: false,
+      //home defined by the scaffold
+      home: Scaffold(
+        //title
+        appBar: AppBar(
+          title: Text('This is how we get down '),
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: false,
-          tabs: [
-            for (final tab in tabs) Tab(text: tab),
-          ],
+        //main content, centered using the Center widget
+        body: Center(
+          //there is a parent child structure, so child is nested within the parent
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Choose the Theme:',
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Change theme & rebuild to
+                  // show it using these buttons
+                  //uses event listener "onPressed"
+                  ElevatedButton(
+                      onPressed: () {
+                        changeTheme(ThemeMode.light);
+                      },
+                      child: Text('Light theme')),
+                  ElevatedButton(
+                      onPressed: () {
+                        changeTheme(ThemeMode.dark);
+                      },
+                      child: Text('Dark theme')),
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-// hint for the to do task:Considering creating the different for different tabs
-          for (final tab in tabs)
-            Center(
-              child: Text(tab),
-            ),
-        ],
       ),
     );
   }
