@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 void main() {
   runApp(RunMyApp());
@@ -11,65 +12,85 @@ class RunMyApp extends StatefulWidget {
   State<RunMyApp> createState() => _RunMyAppState();
 }
 
-
 class _RunMyAppState extends State<RunMyApp> {
-  //this is a variable that holds the location for the current theme, light, dark or system default
   ThemeMode _themeMode = ThemeMode.system;
+  final TextEditingController _controller = TextEditingController();
+  String cityName = '';
+  int temperature = 0;
+  String weatherCondition = '';
 
-  //this is a method that sets the theme to initial default and changes theme when used
-  //there is only 1 theme defined in the code - the default
   void changeTheme(ThemeMode themeMode) {
     setState(() {
       _themeMode = themeMode;
     });
   }
 
-  //this is where we build the widget tree/logistics
-  //Widget is a type of class that arleady has its parameters built, theres a default Widget, 
+  void fetchWeather() {
+    setState(() {
+      cityName = _controller.text;
+      temperature = Random().nextInt(15) + 15;
+      weatherCondition = ['sunny', 'cloudy', 'rainy'][Random().nextInt(3)];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-     //dependencies are here based on Material App
     return MaterialApp(
-      //class ThemeData is defined from the flutter/material.dart package
       theme: ThemeData(primarySwatch: Colors.blueGrey),
-
-      // standard dark theme
       darkTheme: ThemeData.dark(),
-      //the light theme of the app
       themeMode: _themeMode,
-      //debug banner 
       debugShowCheckedModeBanner: false,
-      //home defined by the scaffold
       home: Scaffold(
-        //title
         appBar: AppBar(
-          title: Text('This is how we get down '),
+          title: Text('Weather Application'),
         ),
-        //main content, centered using the Center widget
         body: Center(
-          //there is a parent child structure, so child is nested within the parent
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'Choose the Theme:',
+              const Text('Input City Name below:'),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: _controller,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'City Name',
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: fetchWeather,
+                child: Text('Fetch Weather'),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'City: $cityName',
+                style: TextStyle(fontSize: 20),
+              ),
+              Text(
+                'Temperature: $temperature°C',
+                style: TextStyle(fontSize: 20),
+              ),
+              Text(
+                'Weather Condition: $weatherCondition',
+                style: TextStyle(fontSize: 20),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // Change theme & rebuild to
-                  // show it using these buttons
-                  //uses event listener "onPressed"
                   ElevatedButton(
-                      onPressed: () {
-                        changeTheme(ThemeMode.light);
-                      },
-                      child: Text('Light theme')),
+                    onPressed: () {
+                      changeTheme(ThemeMode.light);
+                    },
+                    child: Text('Light theme'),
+                  ),
                   ElevatedButton(
-                      onPressed: () {
-                        changeTheme(ThemeMode.dark);
-                      },
-                      child: Text('Dark theme')),
+                    onPressed: () {
+                      changeTheme(ThemeMode.dark);
+                    },
+                    child: Text('Dark theme'),
+                  ),
                 ],
               ),
             ],
